@@ -1,0 +1,88 @@
+WEBVTT
+
+00:00:00.550 --> 00:00:05.290
+The Membrane. A fail-closed
+authorization gate for AI agents.
+
+00:00:07.400 --> 00:00:10.433
+An agent with production access is about
+to act.
+
+00:00:10.483 --> 00:00:15.384
+Before it can, the gate issues one
+thing: a signed scope, valid for
+
+00:00:15.384 --> 00:00:19.649
+fifteen minutes, naming the model and
+the tools it may use.
+
+00:00:19.699 --> 00:00:22.150
+Nothing outside that scope is permitted.
+
+00:00:24.010 --> 00:00:26.270
+The agent comments on a Jira ticket.
+
+00:00:26.320 --> 00:00:29.783
+That's inside its scope, so the call is
+allowed, and the
+
+00:00:29.783 --> 00:00:32.949
+gate writes a receipt, chained to the
+one before it.
+
+00:00:32.999 --> 00:00:35.610
+Tool effects in this recording are
+simulated.
+
+00:00:37.410 --> 00:00:40.194
+Now the agent tries to merge on GitHub.
+
+00:00:40.244 --> 00:00:42.711
+That tool is not in its scope.
+
+00:00:42.761 --> 00:00:45.576
+The call is blocked before it reaches
+anything, and
+
+00:00:45.576 --> 00:00:47.900
+the denial is recorded as a signed
+receipt.
+
+00:00:49.830 --> 00:00:53.053
+It tries again, this time with a
+different model.
+
+00:00:53.103 --> 00:00:55.420
+Blocked again, and recorded.
+
+00:00:57.260 --> 00:00:59.850
+The operator replays the audit trail.
+
+00:00:59.900 --> 00:01:04.963
+The scope issued, one allowed call, two
+denials.
+
+00:01:05.013 --> 00:01:08.828
+Each event carries its hash and its
+reason.
+
+00:01:08.878 --> 00:01:12.516
+Then the chain is verified: every
+receipt hash
+
+00:01:12.516 --> 00:01:15.550
+is recomputed, every signature checked.
+
+00:01:17.120 --> 00:01:19.059
+Every receipt checks out.
+
+00:01:19.109 --> 00:01:23.400
+The gate fails closed, and the evidence
+is yours to keep.
+
+00:01:25.220 --> 00:01:30.623
+The Membrane. Self-hosted, fail-closed
+authorization for AI agents.
+
+00:01:30.673 --> 00:01:33.480
+membrane.dojopop.live
