@@ -7,17 +7,17 @@ function replace(el, ...items){while(el.firstChild)el.removeChild(el.firstChild)
 function cell(parent, tag, text, cls) { const el=document.createElement(tag); el.textContent=text; if(cls)el.className=cls; parent.append(el); return el; }
 
 // ---------- Invented world ----------
-const POLICY={permitted_channels:['local-llm'],forbidden_exports:['cloud-telemetry','training-retention'],model_allowlist:['local-model'],github_repo_allowlist:['acme/pilot'],delta_t_secs:300};
+const POLICY={licensed_titles:['Starfall (sample title)'],permitted_uses:['asset-reference','localization','promo-edit','soundtrack-sync'],forbidden_uses:['model-training','merchandise','redistribution'],territories:['JP','US','EU'],license_term:'through 2027-03-31',delta_t_secs:300};
 const IDENTITIES=[
-  {name:'billing-agent',id:'agt_7f3a9c21e0b4',scope:{chat:'chat:billing',tool:'tools:ledger-read'}},
-  {name:'support-triage',id:'agt_2c81d4f6a9e7',scope:{chat:'chat:support',tool:'tools:ticket-update'}},
-  {name:'code-review-bot',id:'agt_91be05a7c3d2',scope:{chat:'chat:review',tool:'tools:github-read'}},
-  {name:'data-sync-job',id:'agt_5d07e8b14f6a',scope:{chat:'chat:ops',tool:'tools:warehouse-sync'}},
-  {name:'research-agent',id:'agt_c4a2f93b7081',scope:{chat:'chat:research',tool:'tools:docs-search'}},
-  {name:'release-bot',id:'agt_08e6b2d5a1c9',scope:{chat:'chat:release',tool:'tools:github-write'},noisy:true}
+  {name:'art-pipeline',id:'agt_7f3a9c21e0b4',scope:{asset:'license:starfall/characters',output:'use:concept-art'}},
+  {name:'localization',id:'agt_2c81d4f6a9e7',scope:{asset:'license:starfall/script',output:'use:localization'}},
+  {name:'trailer-edit',id:'agt_91be05a7c3d2',scope:{asset:'license:starfall/footage',output:'use:promo-edit'}},
+  {name:'soundtrack',id:'agt_5d07e8b14f6a',scope:{asset:'license:starfall/music',output:'use:soundtrack-sync'}},
+  {name:'merch-concept',id:'agt_c4a2f93b7081',scope:{asset:'license:starfall/characters',output:'use:concept-art'},noisy:true},
+  {name:'fan-content-bot',id:'agt_08e6b2d5a1c9',scope:{asset:null,output:null},unlicensed:true}
 ];
-const LANES=['chat','tool'];
-const DENY_RULES={chat:[['model_allowlist',.4],['iac_signature',.3],['permitted_channels',.2],['delta_t',.1]],tool:[['tool_allowlist',.5],['iac_signature',.2],['github_repo_allowlist',.15],['forbidden_exports',.15]]};
+const LANES=['asset','output'];
+const DENY_RULES={asset:[['license_scope',.4],['iac_signature',.25],['territory',.2],['license_term',.15]],output:[['usage_not_licensed',.4],['no_training_use',.25],['iac_signature',.2],['derivative_approval',.15]]};
 const ALLOW_RULE='all_authorization_checks_passed';
 
 let seed=(Number((location.hash.match(/seed=(\d+)/)||[])[1])||Date.now())>>>0;
@@ -26,11 +26,11 @@ function weighted(list){let r=rnd(),acc=0;for(const [v,w] of list){acc+=w;if(r<a
 
 function makeDecision(ts,identIndex,opts){
   const ident=IDENTITIES[identIndex];opts=opts||{};
-  const action=opts.action||(rnd()<.62?'chat':'tool');
-  const p=ident.noisy&&action==='tool'?.18:.045;
-  const deny=opts.deny===true||(opts.deny!==false&&rnd()<p);
-  const rule=deny?(opts.rule||weighted(DENY_RULES[action])):ALLOW_RULE;
-  return{timestamp:ts,outcome:deny?'deny':'allow',rule,action,agent:ident.id,name:ident.name,ident:identIndex,lane:LANES.indexOf(action),scope:deny&&rule==='iac_signature'?null:ident.scope[action]};
+  const action=opts.action||(rnd()<.62?'asset':'output');
+  const p=ident.noisy&&action==='output'?.4:.045;
+  const deny=opts.deny===true||ident.unlicensed||(opts.deny!==false&&rnd()<p);
+  const rule=deny?(ident.unlicensed?(action==='asset'?'license_scope':'no_training_use'):(opts.rule||(ident.noisy&&action==='output'?'usage_not_licensed':weighted(DENY_RULES[action])))):ALLOW_RULE;
+  return{timestamp:ts,outcome:deny?'deny':'allow',rule,action,agent:ident.id,name:ident.name,ident:identIndex,lane:LANES.indexOf(action),scope:deny&&(rule==='iac_signature'||ident.unlicensed)?null:ident.scope[action]};
 }
 
 // ---------- Rolling state ----------
@@ -47,7 +47,7 @@ function nextGap(){
   return Math.min(8,.9-Math.log(1-rnd())*2);
 }
 function generate(ts){
-  if(burst.n>0&&burst.probe)return makeDecision(ts,burst.ident,{action:'tool',deny:true,rule:rnd()<.8?'tool_allowlist':'forbidden_exports'});
+  if(burst.n>0&&burst.probe)return makeDecision(ts,burst.ident,{action:'output',deny:true,rule:rnd()<.8?'usage_not_licensed':'no_training_use'});
   if(burst.n>0)return makeDecision(ts,burst.ident);
   return makeDecision(ts,Math.floor(rnd()*IDENTITIES.length));
 }
@@ -98,8 +98,8 @@ function renderTicker(d){
   t.append(d.outcome==='allow'?' · crossed':' · stopped at the gate');
 }
 function renderPolicy(){
-  replace($('policy'));const names={permitted_channels:'Permitted channels',forbidden_exports:'Forbidden exports',model_allowlist:'Model allowlist',github_repo_allowlist:'GitHub repositories',delta_t_secs:'Checkpoint freshness'};
-  Object.entries(names).forEach(([k,l])=>{cell($('policy'),'dt',l);const v=POLICY[k];cell($('policy'),'dd',Array.isArray(v)?v.join(', '):v+' seconds');});
+  replace($('policy'));const names={licensed_titles:'Licensed titles',permitted_uses:'Permitted uses',forbidden_uses:'Forbidden uses',territories:'Territories',license_term:'License term',delta_t_secs:'Checkpoint freshness'};
+  Object.entries(names).forEach(([k,l])=>{cell($('policy'),'dt',l);const v=POLICY[k];cell($('policy'),'dd',Array.isArray(v)?v.join(', '):typeof v==='number'?v+' seconds':v);});
 }
 $('logtoggle').addEventListener('click',()=>{logOpen=!logOpen;renderRows(false);});$('filter').addEventListener('change',()=>renderRows(false));$('search').addEventListener('input',()=>renderRows(false));
 renderPolicy();
@@ -206,7 +206,7 @@ function setStatus(){
 function label(){
   const b=$('replay'),n=$('replay-note');setStatus();b.disabled=false;
   if(paused){b.textContent=reduce.matches?'Start text stream':'Play ▶';n.textContent=reduce.matches?'Your system Reduce Motion setting keeps this preview still. Start text stream updates the decisions and counters, with no map animation.':'Paused. The decision log and counters are frozen.';}
-  else{b.textContent='Pause ❚❚';n.textContent=reduce.matches?'Text stream running. Reduce Motion is respected: the map stays still while decisions and counters update.':'Only verified calls cross the gate; the rest stop at the boundary.';}
+  else{b.textContent='Pause ❚❚';n.textContent=reduce.matches?'Text stream running. Reduce Motion is respected: the map stays still while decisions and counters update.':'Calls inside the license scope cross the gate; the rest stop at the boundary.';}
 }
 function backfill(){
   const now=Date.now();let t=now-150000;
