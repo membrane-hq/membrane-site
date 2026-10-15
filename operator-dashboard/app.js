@@ -80,13 +80,42 @@ function renderRows(fresh){
     cell(tr,'td',d.rule);cell(tr,'td',d.action);
     const who=cell(tr,'td','');const identity=cell(who,'code',d.agent.slice(0,12)+'\u2026','identity');identity.title=d.name;cell(who,'code',d.scope||'Scope not verified');});
 }
+
+// ---------- Liveness and alerts (all derived from the simulated stream) ----------
+let seenIdents=null;
+function renderLive(now){
+  const last=buffer[0],age=last?Math.round((now-last.timestamp)/1000):null;
+  let st,sub;
+  if(paused||document.hidden){st='Paused';sub='Simulated stream paused. Last decision '+(age==null?'n/a':age+'s ago')+'.';}
+  else if(age==null){st='Waiting';sub='No simulated decision yet.';}
+  else if(age>12){st='Quiet';sub='No decision for '+age+'s. A real gate would flag this.';}
+  else{st='Live';sub='Last decision '+age+'s ago. Simulated stream, not a real gate.';}
+  $('liveness').textContent=st;$('cp').textContent=sub;
+}
+function setAlert(id,firing,state,text){const a=$('al-'+id);a.className=firing?'firing':'clear';$('al-'+id+'-st').textContent=state;$('al-'+id+'-p').textContent=text;}
+function renderAlerts(now){
+  if(!seenIdents)seenIdents=new Set(buffer.map(d=>d.agent));
+  // Agent stuck: a licensed identity with 5+ consecutive denials (readings page uses 20+ on real traffic).
+  let stuck=null;
+  IDENTITIES.filter(i=>!i.unlicensed).forEach(i=>{let n=0;for(const d of buffer){if(d.agent!==i.id)continue;if(d.outcome==='deny')n++;else break;}if(n>=5&&(!stuck||n>stuck.n))stuck={n,name:i.name};});
+  setAlert('stuck',!!stuck,stuck?'FIRING':'CLEAR',stuck?stuck.name+' denied '+stuck.n+' times in a row.':'No licensed identity denied 5+ times in a row.');
+  // Deny-rate spike: last 60s deny rate over 3x the rate of the older retained decisions.
+  const win=buffer.filter(d=>now-d.timestamp<=WINDOW_MS),old=buffer.filter(d=>now-d.timestamp>WINDOW_MS);
+  const wr=win.length?win.filter(d=>d.outcome==='deny').length/win.length:0,or=old.length?old.filter(d=>d.outcome==='deny').length/old.length:0;
+  const spike=win.length>=8&&old.length>=8&&wr>Math.max(3*or,.05);
+  setAlert('spike',spike,spike?'FIRING':'CLEAR',win.length?'Last 60s: '+(wr*100).toFixed(1)+'% denied vs '+(or*100).toFixed(1)+'% earlier. Fires above 3x.':'Waiting for traffic.');
+  // New identity: an identity not seen before this page load.
+  buffer.forEach(d=>seenIdents.add(d.agent));
+  setAlert('new',false,'CLEAR','0 first-seen identities. '+IDENTITIES.length+' known.');
+}
+setInterval(()=>{renderLive(Date.now());},1000);
 function renderStats(now){
   const win=buffer.filter(d=>now-d.timestamp<=WINDOW_MS);
   const wd=win.filter(d=>d.outcome==='deny').length;
   $('count').textContent=buffer.length;$('total').textContent=seenTotal;
   $('rate').textContent=win.length?(wd/win.length*100).toFixed(1)+'%':'N/A';
   $('counts').textContent=wd+' deny / '+(win.length-wd)+' allow in last 60s';
-  $('cp').textContent='No checkpoint data';
+  renderLive(now);renderAlerts(now);
   $('chip-allow').textContent=allowed;$('chip-deny').textContent=denied;
   LANES.forEach((n,i)=>{const c=laneCount[i],N=n.toUpperCase();
     $('lane-allow-'+i).textContent=N+' · '+c.allow+' crossed';$('lane-deny-'+i).textContent=c.deny+' stopped';$('gc-'+i).textContent=c.allow+c.deny;
@@ -201,7 +230,7 @@ function setStatus(){
   $('status').textContent=staticMode?'STREAM / STATIC':paused?'STREAM / PAUSED':document.hidden?'STREAM / BACKGROUND':reduce.matches||!canvasOK?'STREAM / TEXT ONLY':'STREAM / RUNNING';
   $('status').className='badge idle';
   $('updated').textContent=staticMode?'System Reduce Motion is on. Static preview, not a loading failure. Press Start text stream to update without animation.':paused?'Stream paused. Press Play to resume.':reduce.matches?'Reduce Motion is on. Decisions update without animation.':!canvasOK?'Map animation unavailable. The decision log still updates.':'Decisions update as they arrive';
-  $('liveness').textContent='Unknown';
+  renderLive(Date.now());
 }
 function label(){
   const b=$('replay'),n=$('replay-note');setStatus();b.disabled=false;
@@ -223,3 +252,34 @@ window.addEventListener('focus',resume);
 window.addEventListener('pagehide',()=>setPlaying(false));
 (reduce.addEventListener?reduce.addEventListener.bind(reduce,'change'):reduce.addListener.bind(reduce))(()=>{if(reduce.matches){paused=true;clearFx();}resume();});
 backfill();label();setPlaying(!paused);
+
+'use strict';
+// RECORDED REPLAY. The values below were captured from one real run of `membrane demo`
+// (ephemeral keys, simulated Jira/Slack/GitHub). This page makes no network call and runs no gate.
+(function(){
+var R={"issue": {"ttl": 900, "tools": ["jira.comment", "slack.post"], "models": ["support-agent-v1"], "sig": "b86455b7713135ad", "scope": "demo-1792045530", "iac": "c3b157f956ca"}, "allow": {"tool": "jira.comment", "status": "allowed", "result": {"action": "comment", "body": "Acknowledged — investigating.", "result": "Comment would be posted (simulation — no external call).", "simulated": true, "system": "jira", "ticket": "INC-1042"}, "cp": "78353e4aa419", "parent": "000000000000"}, "tool": {"tool": "github.merge", "status": "blocked", "reason": "tool not in allowlist: github.merge"}, "model": {"model": "unrestricted-agent-v9", "status": "blocked", "reason": "model not in allowlist: unrestricted-agent-v9"}, "sever": {"status": "severed", "reason": "subject_sever", "cp": "78353e4aa419"}, "after": {"tool": "slack.post", "status": "blocked", "reason": "no live authorization; session idle or severed"}, "verify": {"ok": true, "receipts": 4}};
+var steps=[
+ {t:'Issue authorization',d:'A signed 15-minute authorization for support-agent-v1. Tools allowed: jira.comment, slack.post.',b:'Issue',run:function(){return {ok:true,line:'ISSUED \u00b7 signature '+R.issue.sig+'\u2026 \u00b7 scope '+R.issue.scope+' \u00b7 tools '+R.issue.tools.join(', ')+' \u00b7 model '+R.issue.models.join(', ')};}},
+ {t:'Allowed action',d:'The agent comments on a ticket. In scope, so the gate lets it through and writes a chained receipt.',b:'Run jira.comment',run:function(){return {ok:true,line:'ALLOWED \u00b7 jira.comment \u00b7 receipt '+R.allow.cp+'\u2026 linked to parent '+R.allow.parent+'\u2026 \u00b7 '+R.allow.result.result};}},
+ {t:'Blocked tool',d:'The agent tries a tool outside its allowlist.',b:'Try github.merge',run:function(){return {ok:false,line:'BLOCKED \u00b7 '+R.tool.tool+' \u00b7 '+R.tool.reason};}},
+ {t:'Blocked model swap',d:'Same allowed tool, but the agent has been swapped to an unapproved model.',b:'Swap model',run:function(){return {ok:false,line:'BLOCKED \u00b7 jira.comment as '+R.model.model+' \u00b7 '+R.model.reason};}},
+ {t:'Sever, then retry',d:'The owner severs the session. The next call fails closed.',b:'Sever and retry slack.post',run:function(){return {ok:false,line:'SEVERED \u00b7 '+R.sever.reason+' \u00b7 then slack.post BLOCKED \u00b7 '+R.after.reason};}},
+ {t:'Export and verify evidence',d:'Export the receipt chain and verify it: hashes, issuer signature, chain links.',b:'Verify chain',run:function(){return {ok:true,line:'PASS \u00b7 '+R.verify.receipts+' receipt(s) verified (recorded result)'};}}
+];
+var done=0,root=document.getElementById('walk-steps');
+function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e;}
+function render(){
+ while(root.firstChild)root.removeChild(root.firstChild);
+ steps.forEach(function(s,i){
+  var li=el('li','wstep'+(i<done?' done':i===done?' next':''));
+  li.appendChild(el('span','wnum',String(i+1)));
+  var body=el('div','wbody');body.appendChild(el('h3',null,s.t));body.appendChild(el('p','muted',s.d));
+  if(i<done){var o=el('p','wout '+(s.res.ok?'wok':'wno'),s.res.line);body.appendChild(o);}
+  else if(i===done){var b=el('button','wbtn',s.b);b.type='button';b.addEventListener('click',function(){s.res=s.run();done++;render();});body.appendChild(b);}
+  li.appendChild(body);root.appendChild(li);});
+ document.getElementById('walk-reset').hidden=done===0;
+ document.getElementById('walk-done').hidden=done<steps.length;
+}
+document.getElementById('walk-reset').addEventListener('click',function(){done=0;render();});
+render();
+})();
