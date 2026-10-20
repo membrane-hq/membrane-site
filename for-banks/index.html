@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Membrane - Authorization for AI agents in financial operations</title>
+  <meta name="description" content="A fail-closed gate for AI agents connected to payment rails, ledgers and customer systems. Signed authorization before each action, spend ceilings enforced before dispatch, tamper-evident receipts after it." />
+  <meta name="theme-color" content="#0b1a22" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The Membrane - A gate for AI agents in financial operations" />
+  <meta property="og:description" content="Payments. Ledgers. Customer accounts. Gate each operation with signed authorization, enforce spend ceilings before dispatch, and fail closed on anything out of scope." />
+  <meta property="og:image" content="https://membrane.dojopop.live/assets/og.svg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip" href="#problem">Skip to content</a>
+  <header class="hero" id="top">
+    <canvas class="gate-canvas" aria-hidden="true"></canvas>
+    <div class="hero-atmosphere" aria-hidden="true"></div>
+    <nav class="topbar">
+      <a class="wordmark-sm topbar-link" href="/">The Membrane</a>
+      <a class="topbar-link" href="https://github.com/membrane-hq/the-membrane" rel="noopener" target="_blank">GitHub</a>
+    </nav>
+    <div class="hero-inner">
+      <h1 class="brand">The Membrane</h1>
+      <p class="headline">A gate for AI agents in financial operations.</p>
+      <p class="subhead">Payments. Ledgers. Customer accounts. Each action needs explicit, signed authorization. Spend ceilings are enforced before dispatch, and anything outside its scope is blocked by default.</p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="#spend-control">See the spend control example</a>
+        <a class="btn btn-ghost" href="https://membrane-demo.dojopop.live/" rel="noopener" target="_blank">Try the gate sandbox</a>
+        <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane/issues/new?template=pilot-request.yml" rel="noopener" target="_blank">Discuss a self-hosted pilot</a>
+      </div>
+    </div>
+    <div class="scroll-cue" aria-hidden="true"><span>Scroll</span></div>
+  </header>
+  <main>
+    <section class="section section-problem reveal" id="problem">
+      <p class="eyebrow">For banks, payment teams and fintech operators</p>
+      <h2 class="section-title">Control what an agent can do before it moves money or touches an account.</h2>
+      <p class="lede">An agent can initiate a transfer, adjust a ledger entry or call a customer system in seconds. A log after the fact doesn't stop an unauthorized payment. The control point belongs before the action: which operation, which counterparty, what ceiling, whose approval, and for how long?</p>
+    </section>
+    <section class="section section-solution reveal" id="solution">
+      <p class="eyebrow">The gate</p>
+      <h2 class="section-title">Explicit permission. Limited scope. Fail closed.</h2>
+      <p class="lede">Route in-scope agent calls through The Membrane. Each call needs a live, signed, time-bounded scope naming the permitted model, tools and task. Out-of-scope calls are blocked. Expired authorization or broken continuity stops the next call. Each action leaves a tamper-evident, hash-linked receipt.</p>
+    </section>
+    <section class="section section-demo reveal" id="spend-control">
+      <p class="eyebrow">Spend authorization: a worked example</p>
+      <h2 class="section-title">Permission to call a payment service is not permission to spend.</h2>
+      <p class="lede">An agent that can reach a payment rail needs its own limits. The gate's spend boundary binds the caller and task to an allowed payee, a per-call ceiling and a cumulative budget. The ceiling is reserved against the budget before anything is dispatched, and the final cost is recorded after settlement.</p>
+      <div class="diff-grid">
+        <div class="diff-item">
+          <span class="diff-num">01</span>
+          <h3>Reserve before dispatch.</h3>
+          <p>Budget accounting is durable and atomic across concurrent calls. A request that does not fit the remaining budget is denied before any money moves. Dispatch happens once, bound to the reservation with an idempotency identifier.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">02</span>
+          <h3>Uncertain is held, not retried.</h3>
+          <p>A timeout is not proof that nothing was paid. If a dispatch may have spent funds but confirmation is missing, the reservation stays held for operator reconciliation. It is never released or retried automatically.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">03</span>
+          <h3>Keep the evidence with the action.</h3>
+          <p>Receipts record the rail, payee, reserved ceiling, final cost and settlement reference, chained to the signed scope that authorized the call. Bearer tokens and signing keys never appear in receipts or in model-visible context.</p>
+        </div>
+      </div>
+      <p class="demo-note">Implementation status: the spend budget ledger and two settlement adapters (Routstr and Crossmint) exist with mock-rail tests. They have not been run against live payment rails, and funding and refund flows are not built. The gate, ledger and receipt chain are the existing foundation; the design is documented in <a href="https://github.com/membrane-hq/the-membrane/blob/main/docs/settlement-adapters.md" rel="noopener" target="_blank">docs/settlement-adapters.md</a>.</p>
+    </section>
+    <section class="section section-diff reveal" id="how">
+      <p class="eyebrow">Your systems. Your control.</p>
+      <h2 class="section-title">Authorize before execution. Keep evidence your auditors can verify.</h2>
+      <div class="diff-grid">
+        <div class="diff-item">
+          <span class="diff-num">01</span>
+          <h3>An inline control point.</h3>
+          <p>Monitoring flags an unauthorized payment after it settles. The Membrane controls routed agent actions before they execute. Deterministic, human-written policy makes the decision; no AI sits in the authorization path.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">02</span>
+          <h3>Self-hosted, operator-owned.</h3>
+          <p>Run the gate in your environment and hold your own signing keys, including air-gapped deployment. Spend limits and payee allowlists live in operator policy, outside model-visible context.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">03</span>
+          <h3>Tamper-evident receipts, ready for your SOC.</h3>
+          <p>Hash-linked receipts tie actions to their authorization. Export JSON Lines or OCSF-inspired JSON to your SIEM, so review and compliance teams work from your records, not only a model provider's logs.</p>
+        </div>
+      </div>
+    </section>
+    <section class="section section-demo reveal" id="demo">
+      <p class="eyebrow">Try the authorization layer</p>
+      <h2 class="section-title">Grant. Allow. Block. Sever. Inspect.</h2>
+      <p class="lede">The public sandbox shows the gate logic: issue a scope, allow an approved action, block an unauthorized model or tool, and stop an agent when authorization expires or is severed. Inspect the linked receipts and export the evidence.</p>
+      <p class="demo-note">The sandbox uses simulated Jira, Slack and GitHub tool effects, ephemeral keys and an in-memory bus. It does not move money or hold production credentials. It demonstrates the control layer that a financial workflow would use.</p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="https://membrane-demo.dojopop.live/" rel="noopener" target="_blank">Open demo dashboard</a>
+        <a class="btn btn-ghost" href="#run">Run it locally</a>
+      </div>
+    </section>
+    <section class="section section-run reveal" id="run">
+      <p class="eyebrow">Run it locally</p>
+      <h2 class="section-title">No secrets. No paid APIs.</h2>
+      <p class="lede">Run the same interactive gate walkthrough on your machine. Gate checks and receipt chaining, with simulated tool effects.</p>
+      <div class="run-panel">
+        <div class="run-steps">
+          <pre class="code"><code>git clone https://github.com/membrane-hq/the-membrane.git
+cd the-membrane
+cargo run -p membrane-cli -- demo</code></pre>
+          <p class="run-open">Then open <a class="mono" href="http://127.0.0.1:8790/">http://127.0.0.1:8790/</a></p>
+        </div>
+      </div>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/settlement-adapters.md" rel="noopener" target="_blank">Read the spend design note</a>
+        <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane#local-demo-dashboard" rel="noopener" target="_blank">Local demo instructions</a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-brand">The Membrane</p>
+      <p class="footer-tag">A fail-closed authorization layer for AI agents. Explore a pilot for your operations.</p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/issues/new?template=pilot-request.yml" rel="noopener" target="_blank">Discuss a self-hosted pilot</a>
+        <a class="btn btn-ghost" href="/">Main site</a>
+        <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane" rel="noopener" target="_blank">View on GitHub</a>
+      </div>
+      <p class="footer-meta">Documentation licensed CC BY 4.0 · code AGPL-3.0.</p>
+      <nav class="footer-legal" aria-label="Legal">
+        <a href="/terms/">Terms of Service</a>
+        <a href="/privacy/">Privacy Policy</a>
+      </nav>
+    </div>
+  </footer>
+  <script src="/app.js"></script>
+</body>
+</html>
