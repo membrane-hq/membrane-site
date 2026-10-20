@@ -29,7 +29,7 @@
     <div class="hero-inner">
       <h1 class="brand">The Membrane</h1>
       <p class="headline">A gate for AI agents in fintech.</p>
-      <p class="subhead">Payments. Ledgers. Customer accounts. Each action needs explicit, signed authorization. Spend ceilings are enforced before dispatch, and anything outside its scope is blocked by default.</p>
+      <p class="subhead">Payments. Ledgers. Policies. Customer accounts. Each action needs explicit, signed authorization. Spend ceilings are enforced before dispatch, and anything outside its scope is blocked by default.</p>
       <div class="cta-group">
         <a class="btn btn-primary" href="#spend-control">See the spend control example</a>
         <a class="btn btn-ghost" href="https://membrane-demo.dojopop.live/" rel="noopener" target="_blank">Try the gate sandbox</a>
@@ -42,7 +42,7 @@
     <section class="section section-problem reveal" id="problem">
       <p class="eyebrow">For banks, payment processors, wallets, brokerages, exchanges, lenders and insurers</p>
       <h2 class="section-title">Control what an agent can do before it moves money or touches an account.</h2>
-      <p class="lede">An agent can initiate a transfer, adjust a ledger entry or call a customer system in seconds. A log after the fact doesn't stop an unauthorized payment. The control point belongs before the action: which operation, which counterparty, what ceiling, whose approval, and for how long?</p>
+      <p class="lede">An agent can initiate a transfer, adjust a ledger entry, pay out a claim, change a policy or call a customer system in seconds. A log after the fact doesn't stop an unauthorized payment or an incorrect claims payout. The control point belongs before the action: which operation, which counterparty, what ceiling, whose approval, and for how long?</p>
     </section>
     <section class="section section-solution reveal" id="solution">
       <p class="eyebrow">The gate</p>
@@ -79,7 +79,7 @@
         <div class="diff-item">
           <span class="diff-num">01</span>
           <h3>An inline control point.</h3>
-          <p>Monitoring flags an unauthorized payment after it settles. The Membrane controls routed agent actions before they execute. Deterministic, human-written policy makes the decision; no AI sits in the authorization path.</p>
+          <p>Monitoring flags an unauthorized payment or a wrong claims payout after it settles. The Membrane controls routed agent actions before they execute: a transfer, a policy change, a customer-account action. Deterministic, human-written policy makes the decision; no AI sits in the authorization path.</p>
         </div>
         <div class="diff-item">
           <span class="diff-num">02</span>
