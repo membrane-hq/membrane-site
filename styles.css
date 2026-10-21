@@ -698,16 +698,6 @@ a { color: inherit; }
 }
 
 @media (max-width: 620px) {
-  .hero-brand {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1.1rem;
-  }
-  .hero-mark {
-    height: 4.5rem;
-    width: 4.5rem;
-  }
-
   .legal-header .topbar {
     align-items: flex-start;
   }
@@ -772,4 +762,17 @@ a { color: inherit; }
   display: block;
   filter: drop-shadow(0 0 14px rgba(92, 140, 255, 0.65)) drop-shadow(0 0 44px rgba(92, 140, 255, 0.3));
   animation: rise-in 0.9s var(--ease) both;
+}
+
+/* Hero mark: stack above title on small screens (after .hero-mark so it wins) */
+@media (max-width: 620px) {
+  .hero-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
   }
+  .hero-mark {
+    height: 4.5rem;
+    width: 4.5rem;
+  }
+}
