@@ -731,3 +731,15 @@ a { color: inherit; }
   .brand, .headline, .subhead, .cta-group { animation: none; }
   .scroll-cue { animation: none; }
 }
+
+/* Brand mark in topbar */
+.wordmark-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+.brand-mark {
+  height: 1.75rem;
+  width: 1.75rem;
+  display: block;
+}
