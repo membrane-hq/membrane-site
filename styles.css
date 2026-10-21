@@ -698,6 +698,16 @@ a { color: inherit; }
 }
 
 @media (max-width: 620px) {
+  .hero-brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.1rem;
+  }
+  .hero-mark {
+    height: 4.5rem;
+    width: 4.5rem;
+  }
+
   .legal-header .topbar {
     align-items: flex-start;
   }
@@ -739,7 +749,27 @@ a { color: inherit; }
   gap: 0.55rem;
 }
 .brand-mark {
-  height: 1.75rem;
-  width: 1.75rem;
+  height: 2.4rem;
+  width: 2.4rem;
   display: block;
+  filter: drop-shadow(0 0 6px rgba(92, 140, 255, 0.6));
 }
+
+/* Hero mark beside the headline */
+.hero-brand {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
+  margin: 0 0 1.25rem;
+}
+.hero-brand .brand {
+  margin: 0;
+}
+.hero-mark {
+  height: clamp(6rem, 14vw, 9rem);
+  width: clamp(6rem, 14vw, 9rem);
+  flex: none;
+  display: block;
+  filter: drop-shadow(0 0 14px rgba(92, 140, 255, 0.65)) drop-shadow(0 0 44px rgba(92, 140, 255, 0.3));
+  animation: rise-in 0.9s var(--ease) both;
+  }
