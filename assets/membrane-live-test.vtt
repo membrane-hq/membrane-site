@@ -1,0 +1,62 @@
+WEBVTT
+
+00:00:00.623 --> 00:00:07.576
+The Membrane sits in front of an AI agent and decides what it is allowed to spend.
+
+00:00:07.586 --> 00:00:10.781
+This is a live test, with real ecash.
+
+00:00:12.590 --> 00:00:14.251
+First, budget in.
+
+00:00:14.261 --> 00:00:19.594
+A 99 sat Cashu token funds a key on a public Routstr node.
+
+00:00:19.604 --> 00:00:23.913
+The key and the token are redacted on screen.
+
+00:00:30.792 --> 00:00:34.545
+Next, a real paid call through the gate.
+
+00:00:34.555 --> 00:00:36.060
+It settles.
+
+00:00:36.070 --> 00:00:38.913
+The receipt says overrun:
+
+00:00:38.923 --> 00:00:45.086
+the gate reserved 150 millisats, but its own cost math came out higher.
+
+00:00:45.096 --> 00:00:49.038
+The overrun is recorded, not hidden.
+
+00:00:49.048 --> 00:00:51.165
+The node itself charged 13.
+
+00:00:53.675 --> 00:00:56.027
+Now the same operation I D again.
+
+00:00:56.037 --> 00:01:00.612
+The gate refuses it, and nothing is sent twice.
+
+00:01:04.400 --> 00:01:07.387
+A second agent has a small budget.
+
+00:01:07.397 --> 00:01:09.104
+Its first call settles.
+
+00:01:11.707 --> 00:01:14.188
+Its next call is blocked with a 402.
+
+00:01:14.198 --> 00:01:19.385
+The budget can't cover the ceiling, so no request leaves the gate.
+
+00:01:19.395 --> 00:01:24.625
+That cutoff fires partly because of the overrun math we just saw.
+
+00:01:26.406 --> 00:01:31.293
+Last, the unused balance comes back as a fresh ecash token.
+
+00:01:31.303 --> 00:01:38.707
+Budget in, paid call, replay refused, cutoff, refund out.
+
