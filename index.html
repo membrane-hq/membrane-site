@@ -60,7 +60,7 @@
         Run a real gate on your machine, send it a signed call that is allowed, then replay the same
         call and send one with no caller proof. Both are refused. Requires Rust (stable), a C toolchain,
         <span class="mono">git</span>, <span class="mono">jq</span> and <span class="mono">curl</span>.
-        No Docker, no relay and no paid API. The first build takes one to two minutes.
+        No Docker and no paid API. The first build takes one to two minutes.
       </p>
       <div class="run-panel">
         <div class="run-steps">
@@ -97,7 +97,7 @@ send   <span class="c-dim"># 403: same proof replayed, refused</span></code></pr
             caller proof is also refused: <span class="mono">missing caller proof</span>.</p>
         </div>
       </div>
-      <p class="demo-note">The gate publishes receipts to a relay. Without one, startup and scope issuing each wait roughly 10 to 20 seconds and log connection errors. A relay is required to publish receipts, sever a session and export evidence; see the full operator walkthrough.</p>
+      <p class="demo-note">This quickstart runs without a relay. Without one, startup and scope issuing each wait roughly 10 to 20 seconds and log connection errors, then continue. A relay adds receipt publishing, ending sessions and evidence export; see the full operator walkthrough.</p>
       <div class="cta-group">
         <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/quickstart.md" rel="noopener" target="_blank">Quickstart in the docs</a>
         <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/operator-walkthrough.md" rel="noopener" target="_blank">Operator walkthrough</a>
