@@ -2,7 +2,7 @@
 
 Website for The Membrane, a fail-closed authorization gate for AI agents.
 
-Live at https://membrane.dojopop.live
+Live at https://themembrane.org
 
 The gate itself (Rust code, docs, license) lives in [membrane-hq/the-membrane](https://github.com/membrane-hq/the-membrane).
 
