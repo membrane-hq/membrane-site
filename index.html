@@ -42,6 +42,7 @@
       <div class="cta-group">
         <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/issues/new?template=pilot-request.yml" rel="noopener" target="_blank">Request a self-hosted pilot</a>
         <a class="btn btn-ghost" href="https://demo.themembrane.org/" rel="noopener" target="_blank">Open demo dashboard</a>
+        <a class="btn btn-ghost" href="#quickstart">Quickstart</a>
         <a class="btn btn-ghost" href="#run">Run the local demo</a>
         <a class="btn btn-ghost" href="/operator-dashboard/">Preview operator audit (synthetic)</a>
       </div>
@@ -51,6 +52,58 @@
   </header>
 
   <main>
+    <!-- ============ QUICKSTART ============ -->
+    <section class="section section-run reveal" id="quickstart">
+      <p class="eyebrow">Quickstart</p>
+      <h2 class="section-title">From clone to a refused call in about five minutes.</h2>
+      <p class="lede">
+        Run a real gate on your machine, send it a signed call that is allowed, then replay the same
+        call and send one with no caller proof. Both are refused. Requires Rust (stable), a C toolchain,
+        <span class="mono">git</span>, <span class="mono">jq</span> and <span class="mono">curl</span>.
+        No Docker, no relay and no paid API. The first build takes one to two minutes.
+      </p>
+      <div class="run-panel">
+        <div class="run-steps">
+          <pre class="code"><code><span class="c-dim"># 1. build</span>
+git clone https://github.com/membrane-hq/the-membrane.git &amp;&amp; cd the-membrane
+cargo build --locked -p membrane-cli --bin membrane --example operator-request
+export PATH="$PWD/target/debug:$PATH" PILOT_DIR="$(mktemp -d)"
+
+<span class="c-dim"># 2. create operator and caller keys, plus an exact grant for the caller</span>
+cargo run --locked -q -p membrane-cli --example operator-request -- setup "$PILOT_DIR"
+export GATE_PUBKEY="$(jq -r .operator_pubkey $PILOT_DIR/keys.json)"
+export CALLER_PUBKEY="$(jq -r .caller_pubkey $PILOT_DIR/keys.json)"
+
+<span class="c-dim"># 3. issue a 15-minute signed scope and start the gate (mock model, local only)</span>
+export NOSTR_NSEC="$(jq -r .operator_nsec $PILOT_DIR/keys.json)"
+membrane iac issue --caller-pubkey "$CALLER_PUBKEY" --scope-id pilot-scope \
+  --model sha256:demo-model --ttl-secs 900 --out "$PILOT_DIR/iac.json"
+MEMBRANE_DEV_MOCK_MODEL=1 membrane gate start --registry "$PILOT_DIR/registry.yaml" \
+  --iac "$PILOT_DIR/iac.json" --listen 127.0.0.1:8787 &gt; "$PILOT_DIR/gate.log" 2&gt;&amp;1 &amp;
+until curl -fsS http://127.0.0.1:8787/health &gt;/dev/null; do sleep 1; done
+
+<span class="c-dim"># 4. sign as the caller and send</span>
+export NOSTR_NSEC="$(jq -r .caller_nsec $PILOT_DIR/keys.json)"
+echo '{"model":"sha256:demo-model","messages":[{"role":"user","content":"hi"}],"stream":false}' &gt; "$PILOT_DIR/chat.json"
+cargo run --locked -q -p membrane-cli --example operator-request -- sign \
+  http://127.0.0.1:8787 "$GATE_PUBKEY" "$PILOT_DIR/iac.json" /v1/chat/completions \
+  "$PILOT_DIR/chat.json" "$PILOT_DIR/request"
+send() { curl -sS -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8787/v1/chat/completions \
+  --header @"$PILOT_DIR/request/headers.txt" --data-binary @"$PILOT_DIR/request/body.json"; }
+send   <span class="c-dim"># 200: signed, in scope, receipt written</span>
+send   <span class="c-dim"># 403: same proof replayed, refused</span></code></pre>
+          <p class="run-open">Real output from a fresh run: <span class="mono">200</span>, then <span class="mono">403</span> with
+            <span class="mono">caller authentication failed: replay or replay capacity exceeded</span>. A call carrying the scope but no
+            caller proof is also refused: <span class="mono">missing caller proof</span>.</p>
+        </div>
+      </div>
+      <p class="demo-note">The gate publishes receipts to a relay. Without one, startup and scope issuing each wait roughly 10 to 20 seconds and log connection errors. A relay is required to publish receipts, sever a session and export evidence; see the full operator walkthrough.</p>
+      <div class="cta-group">
+        <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/quickstart.md" rel="noopener" target="_blank">Quickstart in the docs</a>
+        <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/operator-walkthrough.md" rel="noopener" target="_blank">Operator walkthrough</a>
+      </div>
+    </section>
+
     <!-- ============ PROBLEM ============ -->
     <section class="section section-problem reveal" id="problem">
       <p class="eyebrow">The problem</p>
