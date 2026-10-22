@@ -74,6 +74,24 @@
       </video>
     </section>
 
+    <!-- ============ LIVE TEST ============ -->
+    <section class="section section-live-test reveal" id="live-test">
+      <p class="eyebrow">Live test</p>
+      <h2 class="section-title">A settled call, a refused replay, and a budget cutoff.</h2>
+      <p class="lede">
+        A recorded terminal run of the gate's spend route against a public Routstr node, funded with
+        99 sats of Cashu ecash. A call settles, repeating the same operation ID is refused without a
+        second dispatch, and a small-budget agent is blocked once its budget cannot cover the next
+        call. The unused balance is then refunded. Keys and tokens are redacted. Receipts record an
+        overrun when the final cost exceeds the reserved ceiling; the gate records it rather than
+        capping it.
+      </p>
+      <video class="live-test-video" controls preload="metadata" poster="assets/membrane-live-test-poster.jpg">
+        <source src="assets/membrane-live-test.mp4" type="video/mp4" />
+        <track kind="captions" src="assets/membrane-live-test.vtt" srclang="en" label="English" default />
+      </video>
+    </section>
+
     <!-- ============ SOLUTION ============ -->
     <section class="section section-solution reveal" id="solution">
       <p class="eyebrow">The solution</p>
