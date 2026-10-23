@@ -1,25 +1,25 @@
 WEBVTT
 
-00:00:00.000 --> 00:00:03.200
+00:00:00.000 --> 00:00:11.000
 The Membrane. Operator approval flow. Recorded against the real gate and dashboard. Demo data is simulated.
 
-00:00:03.200 --> 00:00:12.500
+00:00:11.000 --> 00:00:20.300
 A call requires operator approval. The gate holds it. Nothing runs.
 
-00:00:12.500 --> 00:00:32.300
+00:00:20.300 --> 00:00:40.100
 The operator reviews the exact held request and approves it once.
 
-00:00:32.300 --> 00:00:46.800
+00:00:40.100 --> 00:00:54.600
 The caller retries. One approval, one dispatch, receipted, under the same signed scope. The next identical call holds again.
 
-00:00:46.800 --> 00:00:56.000
+00:00:54.600 --> 00:01:03.800
 A second call asks to merge a pull request.
 
-00:00:56.000 --> 00:01:19.900
+00:01:03.800 --> 00:01:27.700
 The operator rejects it. Rejected calls never run.
 
-00:01:19.900 --> 00:01:29.600
+00:01:27.700 --> 00:01:37.400
 The retried merge holds again. Nothing executed.
 
-00:01:29.600 --> 00:01:32.800
+00:01:37.400 --> 00:01:43.067
 Every hold, decision and execution is receipted. themembrane.org
