@@ -145,6 +145,25 @@ send   <span class="c-dim"># 403: same proof replayed, refused</span></code></pr
       </video>
     </section>
 
+    <!-- ============ APPROVAL FLOW ============ -->
+    <section class="section section-live-test reveal" id="approvals">
+      <p class="eyebrow">Operator approvals</p>
+      <h2 class="section-title">One approval, one dispatch.</h2>
+      <p class="lede">
+        A recorded run of the operator approval flow. A call requires operator approval: the gate
+        holds it and dispatches nothing. The operator inspects the exact held request in the local
+        dashboard and approves it once. The caller retries the identical call and the gate dispatches
+        it, receipted, under the same signed scope. Approval changes no scope and executes nothing by
+        itself; the caller always retries, and the next identical call holds again. A second call
+        asking to merge a pull request is rejected and never runs. Recorded against the real gate
+        and dashboard with demo keys and data.
+      </p>
+      <video class="live-test-video" controls preload="metadata" poster="assets/membrane-approval-flow-poster.jpg" aria-label="The Membrane operator approval flow: a held call, an operator approval, one receipted retry, and a rejected merge">
+        <source src="assets/membrane-approval-flow.mp4" type="video/mp4" />
+        <track kind="captions" src="assets/membrane-approval-flow.vtt" srclang="en" label="English" default />
+      </video>
+    </section>
+
     <!-- ============ SOLUTION ============ -->
     <section class="section section-solution reveal" id="solution">
       <p class="eyebrow">The solution</p>
