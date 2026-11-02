@@ -231,15 +231,21 @@ a { color: inherit; }
   background: var(--ink);
   border-color: var(--ink);
 }
-.section .btn-ghost,
-.footer .btn-ghost {
+.section .btn-ghost {
   color: var(--navy);
   border-color: var(--line);
 }
-.section .btn-ghost:hover,
-.footer .btn-ghost:hover {
+.section .btn-ghost:hover {
   border-color: var(--navy);
   background: rgba(15, 47, 63, 0.04);
+}
+.footer .btn-ghost {
+  color: #e8f0f4;
+  border-color: rgba(232, 240, 244, 0.4);
+}
+.footer .btn-ghost:hover {
+  border-color: #e8f0f4;
+  background: rgba(232, 240, 244, 0.06);
 }
 
 .scroll-cue {
@@ -538,6 +544,16 @@ a { color: inherit; }
   font-size: 0.8rem;
   color: rgba(196, 214, 222, 0.5);
   max-width: 36rem;
+}
+.footer-meta a {
+  color: rgba(213, 228, 235, 0.85);
+  text-underline-offset: 0.2em;
+  text-decoration-color: rgba(213, 228, 235, 0.35);
+}
+.footer-meta a:hover,
+.footer-meta a:focus-visible {
+  color: #f2f7f9;
+  text-decoration-color: currentColor;
 }
 
 .footer-legal {
