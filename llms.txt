@@ -1,0 +1,28 @@
+# The Membrane
+
+> Self-hosted authorization for SI agents. Caller-bound signed scopes, operator-owned grants and revocation, and tamper-evident receipts for requests routed through the gate.
+
+This is the Rust project at github.com/membrane-hq/the-membrane, not other products named Membrane. Code: AGPL-3.0-only; repository documentation: CC BY 4.0. Early-stage software with no supported stable release or production-assurance guarantee. The hosted demo has recorded and simulated data, not a live gate. Receipts attest authorized request intent, not upstream completion.
+
+## Evaluate
+
+- [Evaluation guide](https://themembrane.org/agent-guide.md): Local allow/deny check, prerequisites, limits and integration decisions.
+- [Repository README](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/README.md): Current source build, workspace and documentation map.
+- [Quickstart](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/quickstart.md): Separate operator and caller keys, signed request and replay refusal.
+- [Security policy](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/SECURITY.md): Early-stage status, reporting route and deployment limits.
+
+## Integrate
+
+- [Caller identity](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/caller-identity.md): Signed scopes, fresh caller proofs, grant windows and revocation limits.
+- [Policy as code](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/policy-as-code.md): Validate, review, apply and accepted-generation migration.
+- [Operator walkthrough](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/operator-walkthrough.md): Local relay, receipts and evidence export.
+- [GitHub connector](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/github-connector.md): Supported upstream connector, credentials, write operation IDs and reconciliation.
+- [Pilot guide](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/pilot.md): Workflow scope, prerequisites, evaluation and contact.
+
+## Limits
+
+- [Gate threat model](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/threat-model-gate.md): Trust boundaries, required-path assumptions and deployment responsibilities.
+
+- [Enforcement limits](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/audit-fixes.md): Baseline limits; read together with the durable-journal follow-up.
+- [Durable journal](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/durable-journal.md): Recovery, intent records, storage assumptions and upstream reconciliation.
+- [Demo behavior](https://raw.githubusercontent.com/membrane-hq/the-membrane/main/docs/demo.md): Recorded hosted replay, simulated tool effects and the separate local demo.
