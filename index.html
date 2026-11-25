@@ -40,6 +40,7 @@
       </div>
       <p class="headline">Fail-closed authorization for AI agents with production write access.</p>
       <p class="subhead">Every model and tool call needs a live, signed, time-bounded scope; each action writes a tamper-evident receipt; broken continuity blocks or severs the agent.</p>
+      <p class="subhead">Least agency, enforced outside the agent. Every action authorized at runtime, denied by default.</p>
       <div class="cta-group">
         <a class="btn btn-primary" href="https://github.com/membrane-hq/the-membrane/issues/new?template=pilot-request.yml" rel="noopener" target="_blank">Request a self-hosted pilot</a>
         <a class="btn btn-ghost" href="https://github.com/membrane-hq/the-membrane/blob/main/docs/pilot.md" rel="noopener" target="_blank">What a pilot involves</a>
@@ -179,7 +180,8 @@ send   <span class="c-dim"># 403: same proof replayed, refused</span></code></pr
         The Membrane sits directly in front of your agents. It requires a live, signed authorization for
         every model and tool call, records each action in a tamper-evident, hash-linked receipt chain,
         and blocks or severs the agent the moment the chain breaks. Approved actions are provable;
-        unauthorized ones never hit production.
+        unauthorized ones never hit production. The gate runs outside the agent, so the control holds
+        even if the agent or its environment is compromised.
       </p>
     </section>
 
@@ -247,6 +249,41 @@ send   <span class="c-dim"># 403: same proof replayed, refused</span></code></pr
 
 
 
+    </section>
+
+    <!-- ============ ZERO TRUST ============ -->
+    <section class="section section-diff reveal" id="zero-trust">
+      <p class="eyebrow">Zero trust for agents</p>
+      <h2 class="section-title">Controls that live outside the agent.</h2>
+      <p class="lede">
+        Anthropic's <a href="https://claude.com/resources/guides/zero-trust-for-ai-agents" rel="noopener" target="_blank">Zero Trust for AI agents</a>
+        guide asks for controls that sit outside the agent itself, in case the agent or its environment
+        is compromised. The Membrane is that layer. It works the same for any vendor's agents: if a call
+        routes through the gate, the gate decides.
+      </p>
+      <div class="diff-grid">
+        <div class="diff-item">
+          <span class="diff-num">01</span>
+          <h3>Every agent has its own identity.</h3>
+          <p>Each caller holds its own cryptographic key and signs every request. A scope is bound to that
+            caller, so a call without caller proof, or one replayed from another request, is refused.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">02</span>
+          <h3>Every action is authorized, every time.</h3>
+          <p>No standing access. Each model and tool call needs a live, signed, short-lived scope naming
+            exactly what is permitted. Anything outside it is denied.</p>
+        </div>
+        <div class="diff-item">
+          <span class="diff-num">03</span>
+          <h3>The audit trail can't be quietly edited.</h3>
+          <p>Receipts are hash-linked and tamper-evident. Verify the chain offline, with your own keys and
+            no reliance on a provider's logs.</p>
+        </div>
+      </div>
+      <p class="demo-note">What the gate does not do: it does not monitor agent behavior, defend agent
+        memory or detect prompt injection, and it does not inventory models or components. It decides
+        whether each routed action is authorized, and records the result.</p>
     </section>
 
     <!-- ============ DEMO STORY ============ -->
@@ -361,3 +398,4 @@ cargo run -p membrane-cli --features demo -- demo</code></pre>
   <script src="app.js"></script>
 </body>
 </html>
+
